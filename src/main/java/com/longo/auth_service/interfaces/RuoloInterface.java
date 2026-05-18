@@ -15,4 +15,5 @@ public interface RuoloInterface {
     RuoloWithListDto getRoleWithList(UUID id);
     RuoloDto updateRole(UUID id, RuoloRequestDto ruoloRequestDto);
     RuoloDto deleteRole(UUID id);
+    RuoloDto getRoleById(UUID id);
 }

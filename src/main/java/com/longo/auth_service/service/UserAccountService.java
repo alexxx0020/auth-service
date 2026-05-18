@@ -45,21 +45,49 @@ public class UserAccountService implements UserAccountInterface {
 
     @Override
     public List<UserAccountDto> getAllUsers() {
-        return List.of();
+        return userRepository.findAll().stream()
+                .map(u -> modelMapper.map(u, UserAccountDto.class))
+                .toList();
     }
 
     @Override
     public UserAccountDto getUserById(UUID id) {
-        return null;
+        UserAccount uc = userRepository.findById(id).orElseThrow(
+                () -> new RequestNotValidException("Nessun elemento presente con id: " + id)
+        );
+
+        return modelMapper.map(uc, UserAccountDto.class);
     }
 
     @Override
     public UserAccountDto deleteUserById(UUID id) {
-        return null;
+        UserAccount found = userRepository.findById(id).orElseThrow(
+                () -> new RequestNotValidException("Nessun elemento presente con id: " + id)
+        );
+
+        userRepository.delete(found);
+
+        return modelMapper.map(found, UserAccountDto.class);
     }
 
     @Override
     public UserAccountDto updateUser(UUID id, UserAccountRequestDto userAccountRequestDto) {
-        return null;
+        UserAccount found = userRepository.findById(id).orElseThrow(
+                () -> new RequestNotValidException("Nessun elemento presente con id: " + id)
+        );
+
+        Ruolo role = ruoloRepository.findById(userAccountRequestDto.getRuolo()).orElseThrow(
+                () -> new RequestNotValidException("Nessun Ruolo presente con l'id passato")
+        );
+
+        found.setRuolo(role);
+        found.setEmail(userAccountRequestDto.getEmail());
+        found.setUsername(userAccountRequestDto.getUsername());
+        found.setDataRegistrazione(Timestamp.valueOf(LocalDateTime.now()));
+        found.setActive(userAccountRequestDto.isActive());
+
+        UserAccount updated = userRepository.save(found);
+
+        return modelMapper.map(updated, UserAccountDto.class);
     }
 }

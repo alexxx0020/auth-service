@@ -81,5 +81,13 @@ public class RuoloService implements RuoloInterface{
 
         return modelMapper.map(found, RuoloDto.class);
     }
+
+    @Override
+    public RuoloDto getRoleById(UUID id) {
+        Ruolo ruolo = ruoloRepository.findById(id).orElseThrow(
+                () -> new RequestNotValidException("Nessun elemento presente con questo id: " + id));
+
+        return modelMapper.map(ruolo, RuoloDto.class);
+    }
 }
 
